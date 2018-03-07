@@ -13,7 +13,10 @@ namespace TechJobsConsole
         public static List<Dictionary<string, string>> FindAll()
         {
             LoadData();
-            return AllJobs;
+
+            List<Dictionary<string, string>> AllJobsCopy = new List<Dictionary<string, string>>(AllJobs);
+
+            return AllJobsCopy;
         }
 
         /*
@@ -35,6 +38,8 @@ namespace TechJobsConsole
                     values.Add(aValue);
                 }
             }
+
+            values.Sort();
             return values;
         }
 
@@ -49,7 +54,7 @@ namespace TechJobsConsole
             {
                 string aValue = row[column];
 
-                if (aValue.Contains(value))
+                if (aValue.IndexOf(value, 0, System.StringComparison.CurrentCultureIgnoreCase) != -1 && !jobs.Contains(row))
                 {
                     jobs.Add(row);
                 }
@@ -137,6 +142,33 @@ namespace TechJobsConsole
             valueBuilder.Clear();
 
             return rowValues.ToArray();
+        }
+
+        /*
+         * Search for a string within each of the columns
+         */
+        public static List<Dictionary<string, string>> FindByValue(string value)
+        {
+            // load data, if not already loaded
+            LoadData();
+
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> row in AllJobs)
+            {
+                string[] jobKeys = new string[row.Count];
+                
+                foreach (KeyValuePair<string, string> item in row)
+                {
+                    string aValue = row[item.Key];
+                    if (aValue.IndexOf(value, 0, System.StringComparison.CurrentCultureIgnoreCase) != -1 && !jobs.Contains(row))
+                    {
+                        jobs.Add(row);
+                    }
+                }
+            }
+
+            return jobs;
         }
     }
 }
